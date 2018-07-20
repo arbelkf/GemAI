@@ -1,3 +1,5 @@
+# Auther : Kfir Arbel
+# Predict Class
 from sklearn.cross_validation import cross_val_score, ShuffleSplit
 from sklearn.datasets import load_boston
 from sklearn.ensemble import RandomForestClassifier
@@ -144,17 +146,6 @@ class Predict(object):
             #pred = Predict()
             print("Processing:{}".format(ticker))
 
-            #self.DoStrategy(self._strategy, ticker)
-
-            #self.DoStrategy(self._strategyCorr, ticker)
-
-            #self.DoStrategy(self._strategyCorrRolling, ticker)
-
-            #self.DoStrategy(self._strategyLogCorr, ticker)
-
-            #self.DoStrategy(self._strategyCorrDown5Up15, ticker)
-
-            #self.DoStrategy(self._strategyCorrDown10Up25, ticker)
 
             labels = ['ticker' ,'name', 'clf','acc', 'BPSemi','BPAqurate', 'final','highest', 'lowest', 'Hm_days', '_-1 ', '_0 ', '_1 ', '_(0,1)',
                       '_(0,2) ', '_(1,0)', '_(1,2)', '_(2,0)', '_(2,1)']
