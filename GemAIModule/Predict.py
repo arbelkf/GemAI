@@ -156,7 +156,7 @@ class Predict(object):
         return acc, confusionmatrix, final
 
     # find accuuracy & predict for specific ticker
-    def PredictTicker(self, ticker):
+    def PredictTicker(self, ticker, skipPredict=False):
 
         try:
             print("Processing:{}".format(ticker))
@@ -211,11 +211,11 @@ class Predict(object):
             print("args:", inst.args[0])
 
     # interate the prediction over all the nasdaq tickers
-    def PredictAll(self, filepath = '..\ImportModule\\ndx.csv'):
+    def PredictAll(self, filepath = '..\ImportModule\\ndx.csv', skipPredict=False):
         data = pd.read_csv(filepath)
         tickers = data['ticker']
 
-        for ticker in tickers[:]:
+        for ticker in tickers[1:30]:
             sys.stdout.write('.')
             self.PredictTicker(ticker)
 
@@ -226,7 +226,7 @@ class Predict(object):
         writer.save()
 
 pred = Predict()
-pred.PredictAll()
+pred.PredictAll(skipPredict=False)
 print("END")
 
 

@@ -12,6 +12,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import RFECV
+from sklearn.metrics import classification_report, confusion_matrix
 import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -158,6 +159,9 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
     def buy_sell_hold(self,*args):
         raise NotImplementedError("Please Implement this method")
 
+    # add indexes to the dataframe
+    # ticker = name of the index
+    # df - the datafarem to add the index to
     def AddIndex(self, ticker, df):
         df2 = pd.read_csv(self._filePathIndexes + '\{}.csv'.format(ticker))
         df2.set_index('Date', inplace=True)
@@ -170,14 +174,14 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
         df.fillna(0, inplace=True)
         return df
 
+    # clean the dataframe from np.infinity, -np.infinity and drop all NAN
     def CleanDF(self, dfdata):
         dfdata.fillna(0, inplace=True)
         dfdata = dfdata.replace([np.inf, -np.inf], np.nan)
         dfdata.dropna(how='all', inplace=True)
         return dfdata
 
-    # def SetTestClf(self):
-    #     self._
+
 
     def SetActualClf(self):
         raise NotImplementedError("Please Implement this method")
@@ -195,52 +199,50 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
             self.PredictTicker(ticker)
             df = dfUtils.GetFeaturesFromCSV(filename + ticker + ".csv", self._featureList)
 
-
+    # process specific ticker
+    # get the data for the ticker, extract labels
+    # calculate accuracy and make prediction
     def ProcessTicker(self, filename , ticker, skipPredict = False):
         print("Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit, self._lowestLimit, self._hm_days))
         dfUtils = DataFrameUtils()
-
-
+        # get the data for the ticker from the data scrapped before
         df = dfUtils.GetFeaturesFromCSV(filename + ticker + ".csv", self._featureList)
+        # in case the data for the ticker is missing
         if (df is None):
             return None, None, None
         rows, columns = df.shape
         numoffeature = columns - 1
-        #print(rows, columns)
-
 
 
         df = df[(df.T != 0).any()]
 
-
+        # extract labels from the data
+        # the function returns y column, datafram and prediction
         y, df , pred = self.ExtractLabels(df)
 
-        X = df.ix[1:,:-1].values    # independent variables
+        X = df.ix[1:,:-1].values
 
-        pred = pred.ix[:, :-1].values  # independent variables
-        #print("X : {}".format(X.shape))
+        # the only prediction that count is the last one
+        pred = pred.ix[:, :-1].values
 
         y = np.delete(y, (0), axis=0)
-        #print("y : {}".format(y.shape))
-
-
-
+        # normalize the data for X
         X = preprocessing.StandardScaler().fit_transform(X)
 
-
+        # spilt the data for the accuracty calculations
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-
+        # get the test classifier
         clf_test = self._clf_test
 
+        # fir the test classifier
         clf_test.fit(X_train, y_train)
+        # predict from the X_test
         y_pred = clf_test.predict(X_test)
+        # compare y_test o the x_test following the classifier that was trained before on the train data
         acc = clf_test.score(X_test, y_test)
         print("accuracy : {}".format(acc))
-
-
-        ###################################
-        from sklearn.metrics import classification_report, confusion_matrix
+        # calculate the confusion matrix
         confusionmatrix = confusion_matrix(y_test,y_pred, labels=[-1, 0, 1] )
 
         final = [0]
@@ -248,12 +250,13 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
             #print(confusionmatrix)
             return acc, confusionmatrix, final
 
-
+        # get the actual classifier
         clf = self._clf_actual
-
+        # use the actual classifier and recursive feature elimination to select the best number of features.
         m = RFECV(clf, scoring='accuracy')
+        # fit the classifier
         m.fit(X, y)
-
+        # predict the final recommedation/decision
         final = m.predict(pred)
 
         print("Final:{}".format(final))
