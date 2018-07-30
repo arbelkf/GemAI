@@ -14,12 +14,33 @@ class DataFrameUtils():
 
                 #df2 = pd.concat([df2, df[['adj close']]], axis=1)
 
-                my_df = pd.DataFrame(df2)
+                #my_df = pd.DataFrame(df2)
                 #my_df.to_csv('dfInternal.csv', index=False, header=False)
 
                 df2.dropna(inplace=True)
                 #print(df2.head())
                 return df2
+            else:
+                print("file {} missing:".format(fileName))
+                return None
+        except ValueError  as inst:
+            print(type(inst))  # the exception instance
+            print(inst.args)  # arguments stored in .args
+            print(inst)  # __str__ allows args to be printed directly,
+            print("args:", inst.args[0])
+
+    def GetFeaturesFromCSVToExistingDF(self, fileName, featureList, dfExisting):
+        try:
+            if (os.path.isfile(fileName)):
+                df = pd.read_csv(fileName)
+                if (len(dfExisting) < 1):
+                    dfExisting = pd.DataFrame()
+                df.set_index('Date', inplace=True)
+                for index in featureList:
+                    dfExisting = pd.concat([dfExisting, df[[index]]], axis=1)
+
+                dfExisting.dropna(inplace=True)
+                return dfExisting
             else:
                 print("file {} missing:".format(fileName))
                 return None

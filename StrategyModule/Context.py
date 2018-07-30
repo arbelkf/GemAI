@@ -14,3 +14,7 @@ class Context:
         acc, confusionmatrix, final = self._strategy.ProcessTicker(filename, ticker, skipPredict)
         return acc, confusionmatrix, final
         #print(self._strategy.Name)
+
+    def ProcessComposedTicker(self, filename , ticker, skipPredict = False):
+        acc, confusionmatrix, final = self._strategy.ProcessComposedTicker(filename, ticker, skipPredict)
+        return acc, confusionmatrix, final

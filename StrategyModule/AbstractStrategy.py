@@ -1,3 +1,8 @@
+# Auther : Kfir Arbel
+# Abstract Stratgegy -
+# implements all important common functionallity
+# most impotant - implements ProcessTicker
+
 import abc
 import pandas as pd
 import numpy as np
@@ -171,16 +176,31 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
         dfdata.dropna(how='all', inplace=True)
         return dfdata
 
-    def SetTestClf(self):
-        self._
+    # def SetTestClf(self):
+    #     self._
 
     def SetActualClf(self):
         raise NotImplementedError("Please Implement this method")
 
+    def ProcessComposedTicker(self, filename , ticker, skipPredict = False):
+        print("Composed Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit,
+                                                                                dfUtils=DataFrameUtils()))
 
-    def ProcessTicker(self, filename , ticker, skipPredict = False, ):
+        filepath = '..\ImportModule\\ndx.csv'
+        dfUtils = DataFrameUtils()
+        data = pd.read_csv(filepath)
+        tickers = data['ticker']
+        for ticker in tickers[:]:
+            sys.stdout.write('.')
+            self.PredictTicker(ticker)
+            df = dfUtils.GetFeaturesFromCSV(filename + ticker + ".csv", self._featureList)
+
+
+    def ProcessTicker(self, filename , ticker, skipPredict = False):
         print("Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit, self._lowestLimit, self._hm_days))
         dfUtils = DataFrameUtils()
+
+
         df = dfUtils.GetFeaturesFromCSV(filename + ticker + ".csv", self._featureList)
         if (df is None):
             return None, None, None
@@ -194,11 +214,6 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
 
 
         y, df , pred = self.ExtractLabels(df)
-
-        # writer = pd.ExcelWriter('X.xlsx')
-        # df.to_excel(writer, 'Sheet1')
-        # writer.save()
-        # df.to_csv("{}.csv".format(ticker))
 
         X = df.ix[1:,:-1].values    # independent variables
 
@@ -217,11 +232,6 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
 
 
         clf_test = self._clf_test
-        # clf_test =  RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
-        #     max_depth=None, max_features='auto', max_leaf_nodes=None, min_samples_leaf=1,
-        #     min_samples_split=2, min_weight_fraction_leaf=0.0,
-        #     n_estimators=10, n_jobs=2, oob_score=False, random_state=0,
-        #     verbose=0, warm_start=False)
 
         clf_test.fit(X_train, y_train)
         y_pred = clf_test.predict(X_test)
@@ -231,7 +241,6 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
 
         ###################################
         from sklearn.metrics import classification_report, confusion_matrix
-        #print(classification_report(y_test,y_pred))
         confusionmatrix = confusion_matrix(y_test,y_pred, labels=[-1, 0, 1] )
 
         final = [0]
@@ -240,11 +249,6 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
             return acc, confusionmatrix, final
 
 
-        # clf = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
-        #     max_depth=None, max_features='auto', max_leaf_nodes=None, min_samples_leaf=1,
-        #     min_samples_split=2, min_weight_fraction_leaf=0.0,
-        #     n_estimators=10, n_jobs=2, oob_score=False, random_state=0,
-        #     verbose=0, warm_start=False)
         clf = self._clf_actual
 
         m = RFECV(clf, scoring='accuracy')

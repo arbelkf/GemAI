@@ -1,3 +1,8 @@
+# Auther : Kfir Arbel
+# Scrapper class
+# retreives all indexes data from the web
+
+
 import pandas_datareader as web
 from pandas_datareader import data as pdr
 

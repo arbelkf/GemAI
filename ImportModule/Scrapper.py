@@ -1,3 +1,7 @@
+# Auther : Kfir Arbel
+# Scrapper class
+# retreives all stocks data from the web
+
 import bs4 as bs
 import pickle
 import requests
