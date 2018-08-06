@@ -1,5 +1,6 @@
 # Auther : Kfir Arbel
 # Predict Compose Class
+# compose all of the stocks into one database for prediction
 
 from sklearn.cross_validation import cross_val_score, ShuffleSplit
 from sklearn.datasets import load_boston
@@ -8,7 +9,6 @@ import numpy as np
 from GemAIModule.DataFrameUtils import DataFrameUtils
 from sklearn import preprocessing
 
-from GemAIModule.PredictCompose import PredictCompose
 from StrategyModule.PercentForPeriodStrategy import PercentForPeriodStrategy
 from StrategyModule.PercentForPeriodIndexCorrStrategy import PercentForPeriodIndexCorrStrategy
 from StrategyModule.PercentForPeriodIndexLogCorrStrategy import PercentForPeriodIndexLogCorrStrategy
@@ -119,7 +119,7 @@ class PredictCompose(object):
         return acc, confusionmatrix, final
 
     # find accuuracy & predict for specific ticker
-    def PredictTicker(self, ticker):
+    def PredictComposeTicker(self, ticker):
 
         try:
             print("Processing:{}".format(ticker))
@@ -175,12 +175,7 @@ class PredictCompose(object):
 
     # interate the prediction over all the nasdaq tickers
     def PredictAllForTicker(self, ticker ,filepath = '..\ImportModule\\ndx.csv'):
-        data = pd.read_csv(filepath)
-        tickers = data['ticker']
-
-        for ticker in tickers[:]:
-            sys.stdout.write('.')
-            self.PredictTicker(ticker)
+        df = self.PredictComposeTicker(ticker)
 
         # save all results to one excel file
         filename = "strategyparams_processed\\complete.xlsx"
@@ -189,7 +184,7 @@ class PredictCompose(object):
         writer.save()
 
 pred = PredictCompose()
-pred.PredictAllForTicker()
+pred.PredictAllForTicker('AAPL')
 print("END")
 
 

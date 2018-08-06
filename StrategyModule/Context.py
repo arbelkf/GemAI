@@ -10,8 +10,8 @@ class Context:
     def __init__(self, strategy):
         self._strategy = strategy
 
-    def ProcessTicker(self, filename , ticker, skipPredict = False):
-        acc, confusionmatrix, final = self._strategy.ProcessTicker(filename, ticker, skipPredict)
+    def ProcessSpecificTicker(self, filename , ticker, skipPredict = False):
+        acc, confusionmatrix, final = self._strategy.ProcessSpecificTicker(filename, ticker, skipPredict)
         return acc, confusionmatrix, final
         #print(self._strategy.Name)
 

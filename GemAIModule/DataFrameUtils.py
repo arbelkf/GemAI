@@ -29,26 +29,35 @@ class DataFrameUtils():
             print(inst)  # __str__ allows args to be printed directly,
             print("args:", inst.args[0])
 
-    def GetFeaturesFromCSVToExistingDF(self, fileName, featureList, dfExisting):
+    def GetFeaturesFromCSVToExistingDF(self, fileName, featureList):
         try:
+            dftemp = pd.DataFrame()
             if (os.path.isfile(fileName)):
                 df = pd.read_csv(fileName)
-                if (len(dfExisting) < 1):
-                    dfExisting = pd.DataFrame()
-                df.set_index('Date', inplace=True)
-                for index in featureList:
-                    dfExisting = pd.concat([dfExisting, df[[index]]], axis=1)
 
-                dfExisting.dropna(inplace=True)
-                return dfExisting
+                if (len(df) > 0):
+                    df.set_index('Date', inplace=True)
+
+                    for index in featureList:
+                        dftemp = pd.concat([dftemp, df[[index]]], axis=1)
+                    dftemp.dropna(inplace=True)
+
+                    #if (len(dfExisting) < 1):
+                    #    for index in featureList:
+                    #        dfExisting = pd.concat([dfExisting, df[[index]]], axis=1)
+                    #        dfExisting.dropna(inplace=True)
+                    #else:
+                    #dfExisting.App
             else:
                 print("file {} missing:".format(fileName))
-                return None
+
+            return dftemp
         except ValueError  as inst:
             print(type(inst))  # the exception instance
             print(inst.args)  # arguments stored in .args
             print(inst)  # __str__ allows args to be printed directly,
             print("args:", inst.args[0])
+        return dftemp
 
     def GetOnlyOneColumn(self, df, columnName):
         try:

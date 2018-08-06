@@ -1,7 +1,6 @@
 # Auther : Kfir Arbel
 # Abstract Stratgegy -
-# implements all important common functionallity
-# most impotant - implements ProcessTicker
+# Base class to all strategies
 
 import abc
 import pandas as pd
@@ -41,6 +40,7 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
                                             n_estimators=10, n_jobs=2, oob_score=False, random_state=0,
                                             verbose=0, warm_start=False)
                  ):
+        self._dfExisting = pd.DataFrame()
         self._isDaily = isDaily
         self._name = name
         self._hm_days = hm_days
@@ -186,39 +186,87 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
     def SetActualClf(self):
         raise NotImplementedError("Please Implement this method")
 
-    def ProcessComposedTicker(self, filename , ticker, skipPredict = False):
-        print("Composed Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit,
-                                                                                dfUtils=DataFrameUtils()))
+    def concatdf(self, dftemp, dfExisting):
+        if (len(dftemp) > 0):
+            #################
+            rows, columns = dftemp.shape
+            numoffeature = columns - 1
 
+            dftemp = dftemp[(dftemp.T != 0).any()]
+
+            # extract labels from the data
+            # the function returns y column, datafram and prediction
+            y, dftemp, pred = self.ExtractLabels(dftemp)
+
+            if (len(dfExisting) < 1):
+                dfExisting = dftemp
+            else:
+                dfExisting = dfExisting.append(dftemp)
+        return dfExisting
+    # collect all the data from all tickers to one dataframe and pass to the ProcessTicker
+    def ProcessComposedTicker(self, filename , ticker, skipPredict = False):
+        print("Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit,
+                                                                       self._lowestLimit, self._hm_days))
+        dfUtils = DataFrameUtils()
         filepath = '..\ImportModule\\ndx.csv'
         dfUtils = DataFrameUtils()
         data = pd.read_csv(filepath)
-        tickers = data['ticker']
-        for ticker in tickers[:]:
-            sys.stdout.write('.')
-            self.PredictTicker(ticker)
-            df = dfUtils.GetFeaturesFromCSV(filename + ticker + ".csv", self._featureList)
+        ndxtickers = data['ticker']
+        dfExisting = pd.DataFrame()
+        # collect all ticker to one dataframe except the ticker that will be sasved for the last records
+        for ndxticker in ndxtickers[5:15]:
+            if (ndxticker != ticker):
+                sys.stdout.write('.')
+                dftemp = dfUtils.GetFeaturesFromCSVToExistingDF(filename + ndxticker + ".csv", self._featureList)
+                dfExisting = self.concatdf(dftemp, dfExisting)
 
-    # process specific ticker
-    # get the data for the ticker, extract labels
-    # calculate accuracy and make prediction
-    def ProcessTicker(self, filename , ticker, skipPredict = False):
+        # adding the ticker to the last of the dataframe - that way - the prediction will be created to the latest data from the relevant ticker
+        dftemp = dfUtils.GetFeaturesFromCSVToExistingDF(filename + ticker + ".csv", self._featureList)
+        dfExisting = self.concatdf(dftemp, dfExisting)
+
+        if (len(dfExisting ) < 1):
+            return None, None, None
+
+        y = dfExisting['target'].values
+        pred = dfExisting.iloc[-1:]
+
+        # save all results to one excel file
+        filename = "strategyparams_processed\\temp.xlsx"
+        writer = pd.ExcelWriter(filename)
+        dfExisting.to_excel(writer, '{}'.format(ticker))
+        writer.save()
+
+
+
+        acc, confusionmatrix, final = self.ProcessTicker(dfExisting,y, pred,skipPredict)
+        return acc, confusionmatrix, final
+
+    # collect data for specific ticker and pass to the ProcessTicker
+    def ProcessSpecificTicker(self, filename , ticker, skipPredict = False):
         print("Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit, self._lowestLimit, self._hm_days))
         dfUtils = DataFrameUtils()
         # get the data for the ticker from the data scrapped before
         df = dfUtils.GetFeaturesFromCSV(filename + ticker + ".csv", self._featureList)
+        acc, confusionmatrix, final = self.ProcessTicker(df, skipPredict)
+        return acc, confusionmatrix, final
+
+    # process ticker
+    # extract labels
+    # do strategy
+    # calculate accuracy and make prediction
+    def ProcessTicker(self, df, y, pred, skipPredict = False):
         # in case the data for the ticker is missing
-        if (df is None):
-            return None, None, None
-        rows, columns = df.shape
-        numoffeature = columns - 1
-
-
-        df = df[(df.T != 0).any()]
-
-        # extract labels from the data
-        # the function returns y column, datafram and prediction
-        y, df , pred = self.ExtractLabels(df)
+        # if (df is None):
+        #     return None, None, None
+        # rows, columns = df.shape
+        # numoffeature = columns - 1
+        #
+        #
+        # df = df[(df.T != 0).any()]
+        #
+        # # extract labels from the data
+        # # the function returns y column, datafram and prediction
+        # y, df , pred = self.ExtractLabels(df)
 
         X = df.ix[1:,:-1].values
 

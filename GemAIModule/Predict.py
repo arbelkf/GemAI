@@ -152,7 +152,7 @@ class Predict(object):
 
     def DoStrategy(self, strategy, ticker, skipPredict = True):
         context = Context(strategy)
-        acc, confusionmatrix, final = context.ProcessTicker("stock_ndx_processed\\processed_", ticker, skipPredict)
+        acc, confusionmatrix, final = context.ProcessSpecificTicker("stock_ndx_processed\\processed_", ticker, skipPredict)
         return acc, confusionmatrix, final
 
     # find accuuracy & predict for specific ticker
@@ -215,7 +215,7 @@ class Predict(object):
         data = pd.read_csv(filepath)
         tickers = data['ticker']
 
-        for ticker in tickers[1:30]:
+        for ticker in tickers[5:8]:
             sys.stdout.write('.')
             self.PredictTicker(ticker)
 
