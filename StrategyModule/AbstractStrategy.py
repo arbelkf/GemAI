@@ -255,22 +255,10 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
     # do strategy
     # calculate accuracy and make prediction
     def ProcessTicker(self, df, y, pred, skipPredict = False):
-        # in case the data for the ticker is missing
-        # if (df is None):
-        #     return None, None, None
-        # rows, columns = df.shape
-        # numoffeature = columns - 1
-        #
-        #
-        # df = df[(df.T != 0).any()]
-        #
-        # # extract labels from the data
-        # # the function returns y column, datafram and prediction
-        # y, df , pred = self.ExtractLabels(df)
 
         X = df.ix[1:,:-1].values
 
-        # the only prediction that count is the last one
+        # we want to predict using the last record
         pred = pred.ix[:, :-1].values
 
         y = np.delete(y, (0), axis=0)

@@ -8,26 +8,6 @@ from .AbstractStrategy import AbstractStrategy
 from .AbstractPercentForPeriodStrategy import AbstractPercentForPeriodStrategy
 
 class PercentForPeriodIndexCorrStrategy(AbstractPercentForPeriodStrategy):
-    # def process_data_for_labels(self, dfdata):
-    #     hm_days = self.Hm_days
-    #
-    #     df = dfdata.copy()
-    #
-    #     for i in range(1,hm_days+1):
-    #         df['_{}d'.format(i)] = (df['adj close'].shift(-i) -df['adj close']) / df['adj close']
-    #
-    #
-    #     return df
-
-    # def buy_sell_hold(self,*args):
-    #     cols = [c for c in args]
-    #     #requirment = 0.02
-    #     for col in cols:
-    #         if col > self.HighestLimit:
-    #             return 1
-    #         if col < -self.LowestLimit:
-    #             return -1
-    #     return 0
 
     def ExtractFeatures(self, dfdata):
         hm_days = self.Hm_days
@@ -84,34 +64,6 @@ class PercentForPeriodIndexCorrStrategy(AbstractPercentForPeriodStrategy):
         return y, dfdata, pred
 
 
-''' def ProcessData(self, ticker):
-    dfdata = pd.read_csv(self.FilePathStocks + '\{}.csv'.format(ticker))
-    #print(list(dfdata.columns.values))
-    y, df = self.ExtractLabels(ticker, dfdata)
 
-    #print(list(df.columns.values))
-    df['target'] = df['target'].shift(-1)
-
-    # add indexes
-    df2 = pd.DataFrame()
-    df2 = pd.concat([df2, df[['Adj Close']]], axis=1)
-    hm_days = self.Hm_days
-    #for i in range(1, hm_days):
-    #    df2[['_{}d'.format(i)]] = df[['PCT_Chg']].shift(-i)
-
-    for index in self.IndexesList:
-        df = self.AddIndex(index, df)
-
-    # add indicators from StockDataFrame
-
-    stock = stockstats.StockDataFrame.retype(dfdata)
-    for indicator in self.Indicators:
-        df['{}'.format(indicator)] = stock['{}'.format(indicator)]
-        df2 = pd.concat([df2, df[['{}'.format(indicator)]]], axis=1)
-
-    df2 = pd.concat([df2, df[['target']]], axis=1)
-
-    df2.dropna(inplace=True)
-    df2.to_csv(self._filePathProcessedStocks + '\processed_{}.csv'.format(ticker))'''
 
 
