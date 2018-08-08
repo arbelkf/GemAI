@@ -273,7 +273,6 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
 
     # process ticker
     # extract labels
-    # do strategy
     # calculate accuracy and make prediction
     def ProcessTicker(self, df, y, pred, skipPredict = False):
 
@@ -315,6 +314,6 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
         m.fit(X, y)
         # predict the final recommedation/decision
         final = m.predict(pred)
-
+        
         print("Final:{}".format(final))
         return acc, confusionmatrix, final

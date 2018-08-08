@@ -2,6 +2,8 @@
 # date : 6.8.2018
 # Predict Class
 # predict the future decision about a stock using its own data and diffrent params
+# BuyPercentAcc = confusionmatrix[2, 2] / confusionmatrix[0, 2] +  confusionmatrix[2, 0] + confusionmatrix[2, 2]
+# BuyPercentAccAqurate = confusionmatrix[2, 2]  / confusionmatrix[0, 2] + confusionmatrix[2, 0] + confusionmatrix[0, 1] + confusionmatrix[1, 0] + confusionmatrix[2, 2]
 
 from sklearn.cross_validation import cross_val_score, ShuffleSplit
 from sklearn.datasets import load_boston
