@@ -8,6 +8,7 @@
 from GemAIModule.Predict import Predict
 import sys
 
+print("Write \"pred ticker\" - to predict specific ticker")
 str = sys.stdin.readline()
 while(str != "END\n"):
     strparam = str.split()

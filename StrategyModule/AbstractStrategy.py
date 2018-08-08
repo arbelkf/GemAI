@@ -314,6 +314,6 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
         m.fit(X, y)
         # predict the final recommedation/decision
         final = m.predict(pred)
-        
+
         print("Final:{}".format(final))
         return acc, confusionmatrix, final
