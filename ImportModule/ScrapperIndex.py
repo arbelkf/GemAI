@@ -1,5 +1,6 @@
 # Auther : Kfir Arbel
-# Scrapper class
+# date : 6.8.2018
+# ScrapperIndex class
 # retreives all indexes data from the web
 
 

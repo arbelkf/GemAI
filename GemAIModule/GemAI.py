@@ -1,6 +1,7 @@
 # Auther : Kfir Arbel
+# date : 6.8.2018
 # GemAI Class
-
+# labartary to test diffrent strategies
 
 from collections import Counter
 import numpy as np

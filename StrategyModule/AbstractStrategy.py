@@ -1,4 +1,5 @@
 # Auther : Kfir Arbel
+# date : 6.8.2018
 # Abstract Stratgegy -
 # Base class to all strategies
 
@@ -117,7 +118,7 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
 
     @property
     def SPFileLocation(self):
-        abs_file_path = os.path.join(self._baseFileFolder, "../" + self._spFileLocation)
+        abs_file_path = os.path.join(self._baseFileFolder, ".." , self._spFileLocation)
         return abs_file_path
 
     @property
@@ -126,12 +127,18 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
 
     @property
     def FilePathProcessedStocks(self):
-        abs_file_path = os.path.join(self._baseFileFolder, "../" + self._filePathProcessedStocks)
+        abs_file_path = os.path.join(self._baseFileFolder, ".." , self._filePathProcessedStocks)
+        return abs_file_path
+
+    @property
+    def FilePathIndexes(self):
+
+        abs_file_path = os.path.join(self._baseFileFolder, "..", self._filePathIndexes)
         return abs_file_path
 
     @property
     def FilePathStocks(self):
-        abs_file_path = os.path.join(self._baseFileFolder, "../" + self._filePathStocks)
+        abs_file_path = os.path.join(self._baseFileFolder, ".." , self._filePathStocks)
         return abs_file_path
 
 
@@ -163,7 +170,7 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
     # ticker = name of the index
     # df - the datafarem to add the index to
     def AddIndex(self, ticker, df):
-        df2 = pd.read_csv(self._filePathIndexes + '\{}.csv'.format(ticker))
+        df2 = pd.read_csv(self.FilePathIndexes + '\{}.csv'.format(ticker))
         df2.set_index('Date', inplace=True)
         df2.rename(columns={'Adj Close': ticker}, inplace=True)
         df2.drop(['Open', 'High', 'Low', 'Close', 'Volume'], 1, inplace=True)
@@ -204,7 +211,7 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
                 dfExisting = dfExisting.append(dftemp)
         return dfExisting
     # collect all the data from all tickers to one dataframe and pass to the ProcessTicker
-    def ProcessComposedTicker(self, filename , ticker, skipPredict = False):
+    def ProcessComposedTicker(self, ticker, filename , skipPredict = False):
         print("Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit,
                                                                        self._lowestLimit, self._hm_days))
         dfUtils = DataFrameUtils()
@@ -242,13 +249,27 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
         return acc, confusionmatrix, final
 
     # collect data for specific ticker and pass to the ProcessTicker
-    def ProcessSpecificTicker(self, filename , ticker, skipPredict = False):
+    def ProcessSpecificTicker(self, ticker,filename= "stock_ndx_processed\\processed_" , skipPredict = False):
         print("Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit, self._lowestLimit, self._hm_days))
         dfUtils = DataFrameUtils()
         # get the data for the ticker from the data scrapped before
         df = dfUtils.GetFeaturesFromCSV(filename + ticker + ".csv", self._featureList)
-        acc, confusionmatrix, final = self.ProcessTicker(df, skipPredict)
-        return acc, confusionmatrix, final
+        if (df is not None):
+            rows, columns = df.shape
+            numoffeature = columns - 1
+
+            dftemp = df[(df.T != 0).any()]
+
+            # extract labels from the data
+            # the function returns y column, datafram and prediction
+            y, dftemp, pred = self.ExtractLabels(dftemp)
+            y = dftemp['target'].values
+            pred = dftemp.iloc[-1:]
+
+            acc, confusionmatrix, final = self.ProcessTicker(dftemp, y, pred, skipPredict)
+            return acc, confusionmatrix, final
+        else:
+            return None,None,None
 
     # process ticker
     # extract labels

@@ -1,7 +1,13 @@
+# Auther : Kfir Arbel
+# date : 6.8.2018
+# DataFrameUtils Class
+
 import pandas as pd
 import os
 
 class DataFrameUtils():
+    # get all the data about a ticker from a saved file -
+    # return also all features that are in the featurelist param
     def GetFeaturesFromCSV(self, fileName, featureList):
         try:
             if (os.path.isfile(fileName)):
@@ -12,13 +18,8 @@ class DataFrameUtils():
                 for index in featureList:
                     df2 = pd.concat([df2, df[[index]]], axis=1)
 
-                #df2 = pd.concat([df2, df[['adj close']]], axis=1)
-
-                #my_df = pd.DataFrame(df2)
-                #my_df.to_csv('dfInternal.csv', index=False, header=False)
 
                 df2.dropna(inplace=True)
-                #print(df2.head())
                 return df2
             else:
                 print("file {} missing:".format(fileName))
@@ -29,6 +30,8 @@ class DataFrameUtils():
             print(inst)  # __str__ allows args to be printed directly,
             print("args:", inst.args[0])
 
+    # add all the data about a ticker from a saved file to an existing dataframe -
+    # return also all features that are in the featurelist param
     def GetFeaturesFromCSVToExistingDF(self, fileName, featureList):
         try:
             dftemp = pd.DataFrame()
@@ -42,12 +45,6 @@ class DataFrameUtils():
                         dftemp = pd.concat([dftemp, df[[index]]], axis=1)
                     dftemp.dropna(inplace=True)
 
-                    #if (len(dfExisting) < 1):
-                    #    for index in featureList:
-                    #        dfExisting = pd.concat([dfExisting, df[[index]]], axis=1)
-                    #        dfExisting.dropna(inplace=True)
-                    #else:
-                    #dfExisting.App
             else:
                 print("file {} missing:".format(fileName))
 
@@ -59,6 +56,7 @@ class DataFrameUtils():
             print("args:", inst.args[0])
         return dftemp
 
+    # get only one column from the dataframne
     def GetOnlyOneColumn(self, df, columnName):
         try:
             df2 = pd.DataFrame()

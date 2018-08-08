@@ -1,7 +1,9 @@
+# Auther : Kfir Arbel
+# date : 6.8.2018
 # predict for spikes class
 # looks for spike(major change in the value in a short time)
 # the percent change is calculated from a day to the one following it.
-#
+
 from sklearn.cross_validation import cross_val_score, ShuffleSplit
 from sklearn.datasets import load_boston
 from sklearn.ensemble import RandomForestClassifier

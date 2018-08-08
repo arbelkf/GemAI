@@ -1,6 +1,7 @@
 # Auther : Kfir Arbel
+# date : 6.8.2018
 # Predict Compose Class
-# compose all of the stocks into one database for prediction
+# predict one stock every time based on the composed data from all of the stocks
 
 from sklearn.cross_validation import cross_val_score, ShuffleSplit
 from sklearn.datasets import load_boston
@@ -113,6 +114,7 @@ class PredictCompose(object):
                                                     clf_actual=clf_actual_Gradient, clf_name="Gradient")
             self._StrategyList.append(str)
 
+    # run the ProcessComposedTicker from the specific strategy and ticker
     def DoComposedStrategy(self, strategy, ticker, skipPredict = True):
         context = Context(strategy)
         acc, confusionmatrix, final = context.ProcessComposedTicker("stock_ndx_processed\\processed_", ticker, skipPredict)

@@ -1,3 +1,8 @@
+# Auther : Kfir Arbel
+# date : 6.8.2018
+# ModelBaseRankingLab Class
+# use to manually test diffrent strategy and rate it
+
 from sklearn.cross_validation import cross_val_score, ShuffleSplit
 from sklearn.datasets import load_boston
 from sklearn.ensemble import RandomForestClassifier

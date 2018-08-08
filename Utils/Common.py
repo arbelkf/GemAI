@@ -1,3 +1,7 @@
+# Auther : Kfir Arbel
+# date : 6.8.2018
+# Common Class
+
 import datetime as dt
 
 start = dt.datetime(1995, 1, 1)

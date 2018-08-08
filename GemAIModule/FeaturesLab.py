@@ -1,3 +1,8 @@
+# Auther : Kfir Arbel
+# date : 6.8.2018
+#  FeaturesLab Class
+# experiment labs for dataframes
+
 import numpy as np
 from scipy.stats import pearsonr
 import pandas as pd
@@ -11,6 +16,7 @@ class FeaturesLab():
                                 'vr_6_sma','cr-ma2','trix_9_sma','volume_-3,2,-1_max','vr',
                                 'macds','adxr','cr-ma1','dma']
 
+    # find the covariance between the diffrence features - sort it by desending order
     def FindCovs(self, filename):
         dfUtils = DataFrameUtils()
 

@@ -1,4 +1,5 @@
 # Auther : Kfir Arbel
+# date : 6.8.2018
 # Abstract Spike For Period Stratgegy -
 
 import abc

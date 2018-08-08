@@ -1,5 +1,7 @@
 # Auther : Kfir Arbel
+# date : 6.8.2018
 # Predict Class
+# predict the future decision about a stock using its own data and diffrent params
 
 from sklearn.cross_validation import cross_val_score, ShuffleSplit
 from sklearn.datasets import load_boston
@@ -75,19 +77,19 @@ class Predict(object):
         for item in list_of_params:
             str = PercentForPeriodIndexCorrStrategy(name="PercentForPeriodIndexCorrStrategy",
                                                     highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                                    filePathIndexes="..\\ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
+                                                    filePathIndexes="ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
             self._StrategyList.append(str)
             str = PercentForPeriodStrategy(name="PercentForPeriodStrategy",
                                                     highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                                    filePathIndexes="..\\ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
+                                                    filePathIndexes="ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
             self._StrategyList.append(str)
             str = PercentForPeriodIndexCorrRollingStrategy(name="PercentForPeriodIndexCorrRollingStrategy",
                                            highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                           filePathIndexes="..\\ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
+                                           filePathIndexes="ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
             self._StrategyList.append(str)
             str = PercentForPeriodIndexLogCorrStrategy(name="PercentForPeriodIndexLogCorrStrategy",
                                                            highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                                           filePathIndexes="..\\ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
+                                                           filePathIndexes="ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
             self._StrategyList.append(str)
 
             # will be uncomment after I will understand how to make RECV to KNN & SVC classifiers
@@ -131,32 +133,32 @@ class Predict(object):
 
             str = PercentForPeriodIndexCorrStrategy(name="PercentForPeriodIndexCorrStrategy",
                                                     highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                                    filePathIndexes="..\\ImportModule\\Indexes\\", clf_test=clf_test_Gradient,
+                                                    filePathIndexes="ImportModule\\Indexes\\", clf_test=clf_test_Gradient,
                                                     clf_actual=clf_actual_Gradient, clf_name="Gradient")
             self._StrategyList.append(str)
             str = PercentForPeriodStrategy(name="PercentForPeriodStrategy",
                                            highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                           filePathIndexes="..\\ImportModule\\Indexes\\", clf_test=clf_test_Gradient,
+                                           filePathIndexes="ImportModule\\Indexes\\", clf_test=clf_test_Gradient,
                                                     clf_actual=clf_actual_Gradient, clf_name="Gradient")
             self._StrategyList.append(str)
             str = PercentForPeriodIndexCorrRollingStrategy(name="PercentForPeriodIndexCorrRollingStrategy",
                                                            highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                                           filePathIndexes="..\\ImportModule\\Indexes\\", clf_test=clf_test_Gradient,
+                                                           filePathIndexes="ImportModule\\Indexes\\", clf_test=clf_test_Gradient,
                                                     clf_actual=clf_actual_Gradient, clf_name="Gradient")
             self._StrategyList.append(str)
             str = PercentForPeriodIndexLogCorrStrategy(name="PercentForPeriodIndexLogCorrStrategy",
                                                        highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                                       filePathIndexes="..\\ImportModule\\Indexes\\", clf_test=clf_test_Gradient,
+                                                       filePathIndexes="ImportModule\\Indexes\\", clf_test=clf_test_Gradient,
                                                     clf_actual=clf_actual_Gradient, clf_name="Gradient")
             self._StrategyList.append(str)
 
-    def DoStrategy(self, strategy, ticker, skipPredict = True):
+    def DoStrategy(self, strategy, ticker, filename = "stock_ndx_processed\\processed_" , skipPredict = True):
         context = Context(strategy)
-        acc, confusionmatrix, final = context.ProcessSpecificTicker("stock_ndx_processed\\processed_", ticker, skipPredict)
+        acc, confusionmatrix, final = context.ProcessSpecificTicker(ticker , filename, skipPredict)
         return acc, confusionmatrix, final
 
     # find accuuracy & predict for specific ticker
-    def PredictTicker(self, ticker, skipPredict=False):
+    def PredictTicker(self, ticker, filename = "stock_ndx_processed\\processed_",skipPredict=False):
 
         try:
             print("Processing:{}".format(ticker))
@@ -168,7 +170,7 @@ class Predict(object):
             # interate all the strategies in the array
             for item in self._StrategyList:
                 # get accuracy, cunfusion matrix and final decision from the specific strategy
-                acc, confusionmatrix, final = self.DoStrategy(item, ticker, skipPredict=False)
+                acc, confusionmatrix, final = self.DoStrategy(item, ticker,filename, skipPredict=False)
                 # case error of case the ticker file is missing
                 if (acc == None):
                     return None
@@ -211,22 +213,25 @@ class Predict(object):
             print("args:", inst.args[0])
 
     # interate the prediction over all the nasdaq tickers
-    def PredictAll(self, filepath = '..\ImportModule\\ndx.csv', skipPredict=False):
-        data = pd.read_csv(filepath)
-        tickers = data['ticker']
+    def PredictAll(self, ndxfilepath = '..\ImportModule\\ndx.csv', excelfilename = "strategyparams_processed\\complete.xlsx",
+                    processfilename = "stock_ndx_processed\\processed_" , skipPredict=False, firstStockIndex = None, lastStockIndex = None, specificTicker = None):
+        if (specificTicker == None):
+            data = pd.read_csv(ndxfilepath)
+            tickers = data['ticker']
 
-        for ticker in tickers[5:8]:
-            sys.stdout.write('.')
-            self.PredictTicker(ticker)
+            for ticker in tickers[firstStockIndex:lastStockIndex]:
+                sys.stdout.write('.')
+                self.PredictTicker(ticker, processfilename)
 
-        # save all results to one excel file
-        filename = "strategyparams_processed\\complete.xlsx"
-        writer = pd.ExcelWriter(filename)
-        self._df.to_excel(writer, '{}'.format(ticker))
-        writer.save()
+            # save all results to one excel file
 
-pred = Predict()
-pred.PredictAll(skipPredict=False)
-print("END")
+            writer = pd.ExcelWriter(excelfilename)
+            self._df.to_excel(writer)
+            writer.save()
+        else:
+            self.PredictTicker(specificTicker, processfilename)
+#pred = Predict()
+#pred.PredictAll(skipPredict=False, firstStockIndex=5, lastStockIndex=8)
+#print("END")
 
 

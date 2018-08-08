@@ -1,4 +1,6 @@
-
+# Auther : Kfir Arbel
+# date : 6.8.2018
+# Context Class
 
 
 class Context:
@@ -10,11 +12,11 @@ class Context:
     def __init__(self, strategy):
         self._strategy = strategy
 
-    def ProcessSpecificTicker(self, filename , ticker, skipPredict = False):
-        acc, confusionmatrix, final = self._strategy.ProcessSpecificTicker(filename, ticker, skipPredict)
+    def ProcessSpecificTicker(self, ticker, filename = "stock_ndx_processed\\processed_" , skipPredict = False):
+        acc, confusionmatrix, final = self._strategy.ProcessSpecificTicker(ticker,filename, skipPredict)
         return acc, confusionmatrix, final
         #print(self._strategy.Name)
 
-    def ProcessComposedTicker(self, filename , ticker, skipPredict = False):
-        acc, confusionmatrix, final = self._strategy.ProcessComposedTicker(filename, ticker, skipPredict)
+    def ProcessComposedTicker(self, ticker, filename = "stock_ndx_processed\\processed_" ,skipPredict = False):
+        acc, confusionmatrix, final = self._strategy.ProcessComposedTicker(ticker, filename, skipPredict)
         return acc, confusionmatrix, final
