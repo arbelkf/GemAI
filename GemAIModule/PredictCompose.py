@@ -28,7 +28,7 @@ import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
-
+import definitions
 
 
 class PredictCompose(object):
@@ -38,7 +38,7 @@ class PredictCompose(object):
         self._df = pd.DataFrame()
 
         # parameters for the highest value changed from the base value/lowest value changed from the base value/days to make the calculations
-        list_of_params = [(0.2, 0.2, 14), (0.2, 0.15, 14), (0.1, 0.1, 14), (0.2, 0.1, 14), (0.1, 0.05, 14)]
+        list_of_params = [(0.2, 0.2, 14),(0.2, 0.15, 14), (0.1, 0.1, 14), (0.2, 0.1, 14), (0.1, 0.05, 14)]
         #for high in range(1, 20, 1):
          #   for low in range (1, 20, 1):
           #      for days in range (4, 60, 10):
@@ -78,7 +78,7 @@ class PredictCompose(object):
         for item in list_of_params:
             str = PercentForPeriodIndexCorrStrategy(name="PercentForPeriodIndexCorrStrategy",
                                                     highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
-                                                    filePathIndexes="..\\ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
+                                                    clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
             self._StrategyList.append(str)
             str = PercentForPeriodStrategy(name="PercentForPeriodStrategy",
                                                     highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
@@ -117,7 +117,7 @@ class PredictCompose(object):
     # run the ProcessComposedTicker from the specific strategy and ticker
     def DoComposedStrategy(self, strategy, ticker, skipPredict = True):
         context = Context(strategy)
-        acc, confusionmatrix, final = context.ProcessComposedTicker("stock_ndx_processed\\processed_", ticker, skipPredict)
+        acc, confusionmatrix, final = context.ProcessComposedTicker(ticker, skipPredict)
         return acc, confusionmatrix, final
 
     # find accuuracy & predict for specific ticker
@@ -176,17 +176,17 @@ class PredictCompose(object):
             print("args:", inst.args[0])
 
     # interate the prediction over all the nasdaq tickers
-    def PredictAllForTicker(self, ticker ,filepath = '..\ImportModule\\ndx.csv'):
+    def PredictAllForTicker(self, ticker):
         df = self.PredictComposeTicker(ticker)
 
         # save all results to one excel file
-        filename = "strategyparams_processed\\complete.xlsx"
-        writer = pd.ExcelWriter(filename)
+        # filename = "strategyparams_processed\\complete.xlsx"
+        writer = pd.ExcelWriter(definitions.EXCELFile)
         self._df.to_excel(writer, '{}'.format(ticker))
         writer.save()
 
-pred = PredictCompose()
-pred.PredictAllForTicker('AAPL')
-print("END")
+#pred = PredictCompose()
+#pred.PredictAllForTicker('AAPL')
+#print("END")
 
 

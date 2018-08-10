@@ -55,7 +55,7 @@ class PredictSpikes(object):
 
     def DoStrategy(self, strategy, ticker, skipPredict = False):
         context = Context(strategy)
-        acc, confusionmatrix, final = context.ProcessTicker("stock_ndx_processed\\processed_", ticker, skipPredict)
+        acc, confusionmatrix, final = context.ProcessTicker(ticker, skipPredict)
         return acc, confusionmatrix, final
 
     def PredictTicker(self, ticker):

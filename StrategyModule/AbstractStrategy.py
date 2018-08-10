@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 
 from GemAIModule.DataFrameUtils import DataFrameUtils
+import definitions
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -26,7 +27,7 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
     Declare an interface for a type of product object.
     """
 
-    def __init__(self,  name = "ProcessedStocks",isIndicatorLongList = False, filePathProcessedStocks = "ProcessedStocks", filePathIndexes = "Indexes",
+    def __init__(self,  name = "ProcessedStocks",isIndicatorLongList = False, filePathProcessedStocks = "ProcessedStocks", filePathIndexes = "ImportModule\\Indexes",
                  highestLimit =  0.02, lowestLimit = 0.02, hm_days = 7, isDaily = True, spikeLowest = 0.05, spikeHighest = 0.05,
                  clf_name = "RF",
                   clf_test =  RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
@@ -75,7 +76,7 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
                       'close_10.0_le_5_c', 'cr-ma2_xu_cr-ma1_20_c', 'rsi_6', 'rsi_12', 'wr_10', 'wr_6', 'cci', 'cci_20', 'tr',
                       'atr', 'dma', 'pdi', 'mdi', 'dx', 'adx', 'adxr', 'trix', 'trix_9_sma', 'vr', 'vr_6_sma']
 
-        self._baseFileFolder = os.path.dirname(__file__)
+        self._baseFileFolder = definitions.ROOT_DIR
 
         self._featureList = ['adj close', 'atr', 'boll_ub', 'cr-ma3', 'volume_-3~1_min',
                              'vr_6_sma', 'cr-ma2', 'trix_9_sma', 'volume_-3,2,-1_max', 'vr',
@@ -118,7 +119,7 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
 
     @property
     def SPFileLocation(self):
-        abs_file_path = os.path.join(self._baseFileFolder, ".." , self._spFileLocation)
+        abs_file_path = os.path.join(self._baseFileFolder,  self._spFileLocation)
         return abs_file_path
 
     @property
@@ -127,18 +128,18 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
 
     @property
     def FilePathProcessedStocks(self):
-        abs_file_path = os.path.join(self._baseFileFolder, ".." , self._filePathProcessedStocks)
+        abs_file_path = os.path.join(self._baseFileFolder, self._filePathProcessedStocks)
         return abs_file_path
 
     @property
     def FilePathIndexes(self):
 
-        abs_file_path = os.path.join(self._baseFileFolder, "..", self._filePathIndexes)
+        abs_file_path = os.path.join(self._baseFileFolder, self._filePathIndexes)
         return abs_file_path
 
     @property
     def FilePathStocks(self):
-        abs_file_path = os.path.join(self._baseFileFolder, ".." , self._filePathStocks)
+        abs_file_path = os.path.join(self._baseFileFolder, self._filePathStocks)
         return abs_file_path
 
 
@@ -170,6 +171,7 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
     # ticker = name of the index
     # df - the datafarem to add the index to
     def AddIndex(self, ticker, df):
+
         df2 = pd.read_csv(self.FilePathIndexes + '\{}.csv'.format(ticker))
         df2.set_index('Date', inplace=True)
         df2.rename(columns={'Adj Close': ticker}, inplace=True)
@@ -211,24 +213,24 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
                 dfExisting = dfExisting.append(dftemp)
         return dfExisting
     # collect all the data from all tickers to one dataframe and pass to the ProcessTicker
-    def ProcessComposedTicker(self, ticker, filename , skipPredict = False):
+    def ProcessComposedTicker(self, ticker, skipPredict = False):
         print("Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit,
                                                                        self._lowestLimit, self._hm_days))
         dfUtils = DataFrameUtils()
-        filepath = '..\ImportModule\\ndx.csv'
+        #filepath = '..\ImportModule\\ndx.csv'
         dfUtils = DataFrameUtils()
-        data = pd.read_csv(filepath)
+        data = pd.read_csv(definitions.NDXfile)
         ndxtickers = data['ticker']
         dfExisting = pd.DataFrame()
         # collect all ticker to one dataframe except the ticker that will be sasved for the last records
-        for ndxticker in ndxtickers[5:15]:
+        for ndxticker in ndxtickers[:]:
             if (ndxticker != ticker):
                 sys.stdout.write('.')
-                dftemp = dfUtils.GetFeaturesFromCSVToExistingDF(filename + ndxticker + ".csv", self._featureList)
+                dftemp = dfUtils.GetFeaturesFromCSVToExistingDF(definitions.PROCESSFilePath + ndxticker + ".csv", self._featureList)
                 dfExisting = self.concatdf(dftemp, dfExisting)
 
         # adding the ticker to the last of the dataframe - that way - the prediction will be created to the latest data from the relevant ticker
-        dftemp = dfUtils.GetFeaturesFromCSVToExistingDF(filename + ticker + ".csv", self._featureList)
+        dftemp = dfUtils.GetFeaturesFromCSVToExistingDF(definitions.PROCESSFilePath + ticker + ".csv", self._featureList)
         dfExisting = self.concatdf(dftemp, dfExisting)
 
         if (len(dfExisting ) < 1):
@@ -238,22 +240,16 @@ class AbstractStrategy(object , metaclass=abc.ABCMeta):
         pred = dfExisting.iloc[-1:]
 
         # save all results to one excel file
-        filename = "strategyparams_processed\\temp.xlsx"
-        writer = pd.ExcelWriter(filename)
-        dfExisting.to_excel(writer, '{}'.format(ticker))
-        writer.save()
-
-
 
         acc, confusionmatrix, final = self.ProcessTicker(dfExisting,y, pred,skipPredict)
         return acc, confusionmatrix, final
 
     # collect data for specific ticker and pass to the ProcessTicker
-    def ProcessSpecificTicker(self, ticker,filename= "stock_ndx_processed\\processed_" , skipPredict = False):
+    def ProcessSpecificTicker(self, ticker, skipPredict = False):
         print("Processing using {} clf {} high {} low {} hm {}".format(self._name, self.Clf_Name, self._highestLimit, self._lowestLimit, self._hm_days))
         dfUtils = DataFrameUtils()
         # get the data for the ticker from the data scrapped before
-        df = dfUtils.GetFeaturesFromCSV(filename + ticker + ".csv", self._featureList)
+        df = dfUtils.GetFeaturesFromCSV(definitions.PROCESSFilePath + ticker + ".csv", self._featureList)
         if (df is not None):
             rows, columns = df.shape
             numoffeature = columns - 1

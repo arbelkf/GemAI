@@ -29,7 +29,7 @@ import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
-
+import definitions
 
 
 class Predict(object):
@@ -39,7 +39,7 @@ class Predict(object):
         self._df = pd.DataFrame()
 
         # parameters for the highest value changed from the base value/lowest value changed from the base value/days to make the calculations
-        list_of_params = [(0.2, 0.2, 14), (0.2, 0.15, 14), (0.1, 0.1, 14), (0.2, 0.1, 14), (0.1, 0.05, 14)]
+        list_of_params = [(0.2, 0.2, 14)]#, (0.2, 0.15, 14), (0.1, 0.1, 14), (0.2, 0.1, 14), (0.1, 0.05, 14)]
         #for high in range(1, 20, 1):
          #   for low in range (1, 20, 1):
           #      for days in range (4, 60, 10):
@@ -77,6 +77,7 @@ class Predict(object):
 
         # add all strategies to the array
         for item in list_of_params:
+            _baseFileFolder = os.path.dirname(__file__)
             str = PercentForPeriodIndexCorrStrategy(name="PercentForPeriodIndexCorrStrategy",
                                                     highestLimit=item[0], lowestLimit=item[1], hm_days=item[2],
                                                     filePathIndexes="ImportModule\\Indexes\\", clf_test = clf_test_RF, clf_actual = clf_actual_RF, clf_name="RF")
@@ -154,13 +155,13 @@ class Predict(object):
                                                     clf_actual=clf_actual_Gradient, clf_name="Gradient")
             self._StrategyList.append(str)
 
-    def DoStrategy(self, strategy, ticker, filename = "stock_ndx_processed\\processed_" , skipPredict = True):
+    def DoStrategy(self, strategy, ticker, skipPredict = True):
         context = Context(strategy)
-        acc, confusionmatrix, final = context.ProcessSpecificTicker(ticker , filename, skipPredict)
+        acc, confusionmatrix, final = context.ProcessSpecificTicker(ticker , skipPredict)
         return acc, confusionmatrix, final
 
     # find accuuracy & predict for specific ticker
-    def PredictTicker(self, ticker, filename = "stock_ndx_processed\\processed_",skipPredict=False):
+    def PredictTicker(self, ticker, skipPredict=False):
 
         try:
             print("Processing:{}".format(ticker))
@@ -172,7 +173,7 @@ class Predict(object):
             # interate all the strategies in the array
             for item in self._StrategyList:
                 # get accuracy, cunfusion matrix and final decision from the specific strategy
-                acc, confusionmatrix, final = self.DoStrategy(item, ticker,filename, skipPredict=False)
+                acc, confusionmatrix, final = self.DoStrategy(item, ticker,skipPredict=False)
                 # case error of case the ticker file is missing
                 if (acc == None):
                     return None
@@ -215,25 +216,28 @@ class Predict(object):
             print("args:", inst.args[0])
 
     # interate the prediction over all the nasdaq tickers
-    def PredictAll(self, ndxfilepath = '..\ImportModule\\ndx.csv', excelfilename = "strategyparams_processed\\complete.xlsx",
-                    processfilename = "stock_ndx_processed\\processed_" , skipPredict=False, firstStockIndex = None, lastStockIndex = None, specificTicker = None):
+    def PredictAll(self, skipPredict=False, firstStockIndex = None, lastStockIndex = None, specificTicker = None):
         if (specificTicker == None):
-            data = pd.read_csv(ndxfilepath)
+            data = pd.read_csv(definitions.NDXfile)
             tickers = data['ticker']
 
             for ticker in tickers[firstStockIndex:lastStockIndex]:
                 sys.stdout.write('.')
-                self.PredictTicker(ticker, processfilename)
+                self.PredictTicker(ticker)
 
             # save all results to one excel file
 
-            writer = pd.ExcelWriter(excelfilename)
+            writer = pd.ExcelWriter(definitions.EXCELFile)
             self._df.to_excel(writer)
             writer.save()
         else:
-            self.PredictTicker(specificTicker, processfilename)
+            self.PredictTicker(specificTicker)
+            writer = pd.ExcelWriter(definitions.EXCELFile)
+            self._df.to_excel(writer)
+            writer.save()
+
 #pred = Predict()
-#pred.PredictAll(skipPredict=False, firstStockIndex=5, lastStockIndex=8)
+#pred.PredictAll(skipPredict=False, firstStockIndex=7, lastStockIndex=7, specificTicker="AAPL")
 #print("END")
 
 

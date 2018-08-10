@@ -4,14 +4,16 @@
 
 import pandas as pd
 import os
+import definitions
 
 class DataFrameUtils():
     # get all the data about a ticker from a saved file -
     # return also all features that are in the featurelist param
     def GetFeaturesFromCSV(self, fileName, featureList):
         try:
-            if (os.path.isfile(fileName)):
-                df = pd.read_csv(fileName)
+            absoluteFileName = os.path.join(definitions.ROOT_DIR, fileName)
+            if (os.path.isfile(absoluteFileName)):
+                df = pd.read_csv(absoluteFileName )
                 df2 = pd.DataFrame()
                 df.set_index('Date', inplace=True)
                 #df2 = pd.concat([df2, df[['pct_1d']]], axis=1)
@@ -22,7 +24,7 @@ class DataFrameUtils():
                 df2.dropna(inplace=True)
                 return df2
             else:
-                print("file {} missing:".format(fileName))
+                print("file {} missing:".format(absoluteFileName))
                 return None
         except ValueError  as inst:
             print(type(inst))  # the exception instance
@@ -35,8 +37,9 @@ class DataFrameUtils():
     def GetFeaturesFromCSVToExistingDF(self, fileName, featureList):
         try:
             dftemp = pd.DataFrame()
-            if (os.path.isfile(fileName)):
-                df = pd.read_csv(fileName)
+            absoluteFileName = os.path.join(definitions.ROOT_DIR, fileName)
+            if (os.path.isfile(absoluteFileName)):
+                df = pd.read_csv(absoluteFileName)
 
                 if (len(df) > 0):
                     df.set_index('Date', inplace=True)
@@ -46,7 +49,7 @@ class DataFrameUtils():
                     dftemp.dropna(inplace=True)
 
             else:
-                print("file {} missing:".format(fileName))
+                print("file {} missing:".format(absoluteFileName))
 
             return dftemp
         except ValueError  as inst:
