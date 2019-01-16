@@ -19,8 +19,8 @@ The results are around 33 percent for true positive and true negative. The label
 
 ### Import Module
 The Import Modlue is in charge of importing the raw data like daily stocks values and daily indexes values
-**Scrapper** – scrap stocks data
-**ScrapperIndex** – scrap indexes values
+* **Scrapper** – scrap stocks data
+* **ScrapperIndex** – scrap indexes values
 
 ### **Strategy Module** 
 This module is in charge of implementing different strategies to calculate the labels from the raw data
