@@ -26,6 +26,7 @@ The Import Modlue is in charge of importing the raw data like daily stocks value
 **AbstractStrategy** – abstract class – implements:
 * **ProcessSpecificTicker** – extract label, creates confusionmatrix and prediction for the next day
 * **ProcessComposedTicker** – collects raw data from different stocks to one data table and run ProcessSpecificTickeron it. Under the assumption that all stocks behave the same, I create more raw data.
+
 **AbstractPercentForPeriodStrategy** – abstract class – inherit from AbstractStrategy, implements strategy for change in percentage of the value of the stock for specified period
 **PercentForPeriodIndexCorrRollingStrategy** – concrete class – inherit from AbstractPercentForPeriodStrategy, implements a rolling window to average an already divided by the index values
 **PercentForPeriodIndexCorrStrategy** - concrete class – inherit from AbstractPercentForPeriodStrategy, values are divided by the index values
