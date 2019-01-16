@@ -5,7 +5,7 @@ To each stock values I have added related markets indexes and indicators. Than I
 
 I have checked the following predictors:
 * RandomForestClassifier
-*KNeighborsClassifier 
+* KNeighborsClassifier 
 * GradientBoostingClassifier
 * SVC – support vector machine
 * GradientBoostingClassifier
