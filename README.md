@@ -3,13 +3,14 @@ Analysis and forecasting stock prices using different machine learning strategie
 In this project I have collected closing prices from all the main stocks in the USA for the last 25 years.
 To each stock values I have added related markets indexes and indicators. Than I have run pattern recognitions on this data.
 
-I have checked the following predictors:
+I have checked the following classifiers:
 * RandomForestClassifier
 * KNeighborsClassifier 
 * GradientBoostingClassifier
 * SVC – support vector machine
 * GradientBoostingClassifier
-* Best predictor was the random forest predictor with the 14 days predictor and sliding window of 3 days.
+
+Best classifier was the random forest predictor with the 14 days predictor and sliding window of 3 days.
 
 It predicts buying opportunity.
 
@@ -55,4 +56,5 @@ machine learning module:
 **PredictCompose** – predictors that runs throw all stocks in the Nasdaq index
 
 ### Future improvement
-adding text analysis (NLTK) to news about stocks to help predict future values can help create a more accurate predictor
+1. adding text analysis (NLTK) to news about stocks to help predict future values can help create a more accurate predictor
+2. using 1 minute real time raw data
