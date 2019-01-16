@@ -29,17 +29,17 @@ This module is in charge of implementing different strategies to calculate the l
 * **ProcessSpecificTicker** – extract label, creates confusionmatrix and prediction for the next day
 * **ProcessComposedTicker** – collects raw data from different stocks to one data table and run ProcessSpecificTickeron it. Under the assumption that all stocks behave the same, I create more raw data.
 
-**AbstractPercentForPeriodStrategy** – abstract class – inherit from AbstractStrategy, implements strategy for change in percentage of the value of the stock for specified period
+**AbstractPercentForPeriodStrategy** – abstract class – inherits from AbstractStrategy, implements strategy for change in percentage of the value of the stock for specified period
 
-**PercentForPeriodIndexCorrRollingStrategy** – concrete class – inherit from AbstractPercentForPeriodStrategy, implements a rolling window to average an already divided by the index values
+**PercentForPeriodIndexCorrRollingStrategy** – concrete class – inherits from AbstractPercentForPeriodStrategy, implements a rolling window to average an already divided by the index values
 
-**PercentForPeriodIndexCorrStrategy** - concrete class – inherit from AbstractPercentForPeriodStrategy, values are divided by the index values
+**PercentForPeriodIndexCorrStrategy** - concrete class – inherits from AbstractPercentForPeriodStrategy, values are divided by the index values
 
-**PercentForPeriodIndexLogCorrStrategy** – concrete class – inherit from AbstractPercentForPeriodStrategy, implements a log on the already divided by the index values
+**PercentForPeriodIndexLogCorrStrategy** – concrete class – inherits from AbstractPercentForPeriodStrategy, implements a log on the already divided by the index values
 
-**AbstractSpikeForPeriodStrategy** – abstract class – inherit from AbstractStrategy, implements strategy for sharp change in percentage of the value of the stock for specified period, once the level is crossed – the label is set
+**AbstractSpikeForPeriodStrategy** – abstract class – inherits from AbstractStrategy, implements strategy for sharp change in percentage of the value of the stock for specified period, once the level is crossed – the label is set
 
-**SpikeForPeriodStrategy** – concrete class – inherit from AbstractSpikeForPeriodStrategy – implements looking for a rise in the percentage for a specific period 
+**SpikeForPeriodStrategy** – concrete class – inherits from AbstractSpikeForPeriodStrategy – implements looking for a rise in the percentage for a specific period 
 
 
 ### **GemAIModule**
@@ -49,9 +49,9 @@ machine learning module:
 **ModelBaseRankingLab** – utils for searching for the best predictor
 
 **Predict** -  the predictor
-* **PredictTicker** – predict specific stock and returns also confusion matraix
+* **PredictTicker** – predicts specific stock and returns also confusion matraix
 * **PredictAll** – runs predict on all the stocks from Nasdaq(ndx)
-**PredictSpikes** – predictor that uses the spike strategy
-**PredictCompose** – predictor that runs throw all stocks in the Nasdaq index
+**PredictSpikes** – predictors that uses the spike strategy
+**PredictCompose** – predictors that runs throw all stocks in the Nasdaq index
 
-Future improvement - adding text analysis (NLTK) to news about stocks to help predict future values can help create a more accurate predictor
+### Future improvement - adding text analysis (NLTK) to news about stocks to help predict future values can help create a more accurate predictor
