@@ -54,4 +54,4 @@ machine learning module:
 **PredictSpikes** – predictor that uses the spike strategy
 **PredictCompose** – predictor that runs throw all stocks in the Nasdaq index
 
-Future improvement - adding text analysis (NLTK) to news about stocks to help predict future values can help create a more reliable predictor
+Future improvement - adding text analysis (NLTK) to news about stocks to help predict future values can help create a more accurate predictor
