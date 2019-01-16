@@ -17,11 +17,13 @@ The results are around 33 percent for true positive and true negative. The label
 
 **Main.py** – main console to run
 
+###### Import Module###### 
 The Import Modlue is in charge of importing the raw data like daily stocks values and daily indexes values
 **Scrapper** – scrap stocks data
 **ScrapperIndex** – scrap indexes values
 
-**Strategy Module** is in charge of implementing different strategies to calculate the labels from the raw data
+###### **Strategy Module**###### 
+This module is in charge of implementing different strategies to calculate the labels from the raw data
 
 **AbstractStrategy** – abstract class – implements:
 * **ProcessSpecificTicker** – extract label, creates confusionmatrix and prediction for the next day
@@ -40,7 +42,8 @@ The Import Modlue is in charge of importing the raw data like daily stocks value
 **SpikeForPeriodStrategy** – concrete class – inherit from AbstractSpikeForPeriodStrategy – implements looking for a rise in the percentage for a specific period 
 
 
-**GemAImodule** – machine learning module:
+###### **GemAImodule** ###### 
+machine learning module:
 **FeaturesLab** – a lab, searches for the covariance values between the different features 
 **DataFrameUtils** – utils for handling the raw data
 **ModelBaseRankingLab** – utils for searching for the best predictor
